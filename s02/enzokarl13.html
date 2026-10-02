@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karl13 // ASCII Cat Sanctuary</title>
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --card-bg: rgba(18, 26, 43, 0.75);
+            --card-border: rgba(120, 140, 255, 0.2);
+            --card-hover-border: rgba(138, 92, 246, 0.6);
+            --neon-cyan: #00f0ff;
+            --neon-pink: #ff2a85;
+            --neon-purple: #a855f7;
+            --neon-amber: #f59e0b;
+            --neon-green: #10b981;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --font-mono: "Cascadia Code", "Fira Code", "JetBrains Mono", Consolas, "Courier New", monospace;
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(ellipse at 15% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 45%),
+                radial-gradient(ellipse at 85% 75%, rgba(0, 240, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 42, 133, 0.08) 0%, transparent 60%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient scanline texture */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.12),
+                    rgba(0, 0, 0, 0.12) 1px,
+                    transparent 1px,
+                    transparent 3px);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: var(--neon-purple);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .badge .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.6;
+            }
+        }
+
+        h1 {
+            font-size: clamp(2.4rem, 5vw, 3.8rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 20%, var(--neon-cyan) 60%, var(--neon-pink) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 14px;
+            text-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto 28px;
+            line-height: 1.6;
+        }
+
+        /* Interactive Hero Petting Station */
+        .hero-station {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 32px 24px;
+            margin-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero-station::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .big-cat-screen {
+            background: rgba(4, 7, 14, 0.85);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.15);
+            position: relative;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .hero-ascii {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.25;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+            white-space: pre;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 16px;
+            z-index: 2;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn:hover {
+            background: rgba(255, 42, 133, 0.2);
+            border-color: var(--neon-pink);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 42, 133, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            border: none;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(255, 42, 133, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #be185d, var(--neon-purple));
+            box-shadow: 0 6px 25px rgba(255, 42, 133, 0.5);
+        }
+
+        .status-text {
+            margin-top: 12px;
+            font-family: var(--font-mono);
+            color: var(--neon-amber);
+            font-size: 0.9rem;
+            min-height: 24px;
+        }
+
+        /* Grid Gallery */
+        .section-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title span {
+            color: var(--neon-purple);
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--card-hover-border);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(168, 85, 247, 0.15);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text-dim);
+        }
+
+        .ascii-box {
+            background: rgba(2, 4, 10, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 170px;
+            overflow-x: auto;
+        }
+
+        pre {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.25;
+            color: var(--neon-cyan);
+            user-select: all;
+        }
+
+        .card:nth-child(2) pre {
+            color: #f472b6;
+        }
+
+        .card:nth-child(3) pre {
+            color: #34d399;
+        }
+
+        .card:nth-child(4) pre {
+            color: #fbbf24;
+        }
+
+        .card:nth-child(5) pre {
+            color: #60a5fa;
+        }
+
+        .card:nth-child(6) pre {
+            color: #c084fc;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--neon-purple);
+            border-color: var(--neon-purple);
+            color: #fff;
+        }
+
+        /* Floating Paw Print Animation on Click */
+        .paw-pop {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp 1.2s forwards ease-out;
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.6);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.4) rotate(15deg);
+            }
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            font-family: var(--font-mono);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        footer a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="badge">
+                <span class="status-dot"></span>
+                NODE :: S02/KARL13 // ONLINE
+            </div>
+            <h1>Cyber ASCII Cats</h1>
+            <p class="subtitle">A handcrafted cybernetic sanctuary filled with retro monospace feline companions. Click
+                around, pet the cats, or copy any cat to your clipboard!</p>
+        </header>
+
+        <!-- Interactive Petting Deck -->
+        <section class="hero-station">
+            <div
+                style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--neon-purple); letter-spacing: 0.15em;">
+                [ INTERACTIVE FELINE TERMINAL ]
+            </div>
+
+            <div class="big-cat-screen" id="cat-screen">
+                <pre class="hero-ascii" id="interactive-cat">
+        /\_____/\
+       /  o   o  \
+      ( ==  ^  == )   &lt; "Purr... system initialized!" &gt;
+       )         (
+      (           )
+     ( (  )   (  ) )
+    (__(__)___(__)__)
+        </pre>
+            </div>
+
+            <div class="controls-row">
+                <button class="btn btn-primary" id="pet-btn">🐾 Pet Karl's Cat (<span id="pet-count">0</span>)</button>
+                <button class="btn" id="mood-happy">😺 Happy</button>
+                <button class="btn" id="mood-hacker">💻 Hacker</button>
+                <button class="btn" id="mood-sleep">💤 Sleep</button>
+                <button class="btn" id="mood-wizard">🧙 Wizard</button>
+            </div>
+
+            <div class="status-text" id="status-message">Cat status: Calm, cozy, and purring happily.</div>
+        </section>
+
+        <!-- The Cat Gallery -->
+        <h2 class="section-title">
+            <span>01 //</span> Feline Monospace Database
+        </h2>
+
+        <div class="grid">
+            <!-- Card 1 -->
+            <div class="card">
+                <div class="card-top">
+                    <div class="card-title">🐈 The Loaf Specimen</div>
+                    <span class="card-tag">#loaf #zen</span>
+                </div>
+                <div class="ascii-box">
+                    <pre id="cat-1">
+   |\__/,|   (`\
+ _.|o o  |_   ) )
+-(((---(((--------
+          </pre>
+                </div>
+                <div class="card-footer">
+                    <span class="card-desc">Master of aerodynamic tucking.</span>
+                    <button class="copy-btn" onclick="copyCat('cat-1', this)">Copy Cat</button>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card">
+                <div class="card-top">
+                    <div class="card-title">☕ Cozy Cafe Kitty</div>
+                    <span class="card-tag">#coffee #chill</span>
+                </div>
+                <div class="ascii-box">
+                    <pre id="cat-2">
+      /\_/\  
+     ( o.o ) 
+     (  =  )  [☕]
+     -(___)-
+          </pre>
+                </div>
+                <div class="card-footer">
+                    <span class="card-desc">Sipping warm milk and coffee.</span>
+                    <button class="copy-btn" onclick="copyCat('cat-2', this)">Copy Cat</button>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card">
+                <div class="card-top">
+                    <div class="card-title">📦 Box Inspector</div>
+                    <span class="card-tag">#fits #sits</span>
+                </div>
+                <div class="ascii-box">
+                    <pre id="cat-3">
+     /\_/\
+    ( ='.'= )
+  +-[--o-o---]+
+  |  AMAZON   |
+  +-----------+
+          </pre>
+                </div>
+                <div class="card-footer">
+                    <span class="card-desc">If it fits, it strictly sits.</span>
+                    <button class="copy-btn" onclick="copyCat('cat-3', this)">Copy Cat</button>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card">
+                <div class="card-top">
+                    <div class="card-title">💻 Terminal Hacker Cat</div>
+                    <span class="card-tag">#root #cyber</span>
+                </div>
+                <div class="ascii-box">
+                    <pre id="cat-4">
+    /\_____/\
+   /  -   -  \
+  ( ==  w  == )  &lt;sudo chmod 777 treats/&gt;
+   ) [=====] (   
+  (  |__|__|  )  
+ (__(_______)__)
+          </pre>
+                </div>
+                <div class="card-footer">
+                    <span class="card-desc">Bypassing firewalls for salmon.</span>
+                    <button class="copy-btn" onclick="copyCat('cat-4', this)">Copy Cat</button>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="card">
+                <div class="card-top">
+                    <div class="card-title">🌙 Moonlit Sleeper</div>
+                    <span class="card-tag">#dreams #zzz</span>
+                </div>
+                <div class="ascii-box">
+                    <pre id="cat-5">
+      |\      _,,,---,,_
+ZZZzz /,`.-'`'    -.  ;-;;,_
+     |,4-  ) )-,_. ,\ (  `'-'
+    '---''(_/--'  `-'\_)
+          </pre>
+                </div>
+                <div class="card-footer">
+                    <span class="card-desc">Napping in 4K resolution.</span>
+                    <button class="copy-btn" onclick="copyCat('cat-5', this)">Copy Cat</button>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="card">
+                <div class="card-top">
+                    <div class="card-title">✨ Curious Stalker</div>
+                    <span class="card-tag">#pounce #play</span>
+                </div>
+                <div class="ascii-box">
+                    <pre id="cat-6">
+       _                        
+       \`*-.                    
+        )  _`-.                 
+       .  : `. .                
+       : _   '  \               
+       ; *` _.   `*-._          
+       `-.-'          `-.       
+         ;       `       `.     
+          </pre>
+                </div>
+                <div class="card-footer">
+                    <span class="card-desc">Tracking a rogue laser pointer.</span>
+                    <button class="copy-btn" onclick="copyCat('cat-6', this)">Copy Cat</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div>Made with ❤️ and raw HTML &amp; CSS for Karl13</div>
+            <div><a href="../index.html">&larr; Return to STSWENG Main Hub</a></div>
+        </footer>
+    </div>
+
+    <script>
+        // Cat mood library for interactive hero
+        const moods = {
+            happy: {
+                art: `
+        /\\_____/\\
+       /  ^   ^  \\
+      ( ==  w  == )   < "Purrrr! Best dev ever!" >
+       )         (
+      (           )
+     ( (  )   (  ) )
+    (__(__)___(__)__)
+`,
+                message: "Status: Cat is extremely happy and vibrating with purrs."
+            },
+            hacker: {
+                art: `
+        /\\_____/\\
+       /  ⌐■_■   \\
+      ( ==  ^  == )   < "Injecting tuna.sh into mainframe..." >
+       ) [====]  (
+      (   |..|    )
+     ( (  )   (  ) )
+    (__(__)___(__)__)
+`,
+                message: "Status: Access granted to all cat treats in the cluster."
+            },
+            sleep: {
+                art: `
+        /\\_____/\\
+       /  -   -  \\
+      ( ==  .  == )   z Z Z . . .
+       )         (
+      (           )
+     ( (  )   (  ) )
+    (__(__)___(__)__)
+`,
+                message: "Status: Shhh... kitty is recharging battery."
+            },
+            wizard: {
+                art: `
+           /\\
+          /  \\
+         /____\\
+        /\\_____/\\
+       /  *   *  \\
+      ( ==  o  == )   < *Casts Meowgic Missile* >
+       )    /\\   (
+      (    /__\\   )
+     ( (  )   (  ) )
+    (__(__)___(__)__)
+`,
+                message: "Status: Wizard cat just enchanted your code with zero bugs."
+            }
+        };
+
+        const screen = document.getElementById("interactive-cat");
+        const statusMsg = document.getElementById("status-message");
+        const petBtn = document.getElementById("pet-btn");
+        const petCount = document.getElementById("pet-count");
+        let pets = 0;
+
+        // Petting button interaction
+        petBtn.addEventListener("click", (e) => {
+            pets++;
+            petCount.textContent = pets;
+            screen.style.transform = "scale(1.04)";
+            setTimeout(() => {
+                screen.style.transform = "scale(1)";
+            }, 150);
+
+            // Spawn floating paw / heart
+            const emojis = ["🐾", "💖", "✨", "🐟", "😸"];
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const pop = document.createElement("div");
+            pop.className = "paw-pop";
+            pop.textContent = emoji;
+            pop.style.left = e.pageX + (Math.random() * 40 - 20) + "px";
+            pop.style.top = (e.pageY - 20) + "px";
+            document.body.appendChild(pop);
+            setTimeout(() => pop.remove(), 1200);
+
+            statusMsg.textContent = `You've petted Karl's cat ${pets} time${pets === 1 ? '' : 's'}! Purr level: ${pets * 10}%!`;
+        });
+
+        // Mood switchers
+        document.getElementById("mood-happy").addEventListener("click", () => {
+            screen.textContent = moods.happy.art;
+            statusMsg.textContent = moods.happy.message;
+        });
+
+        document.getElementById("mood-hacker").addEventListener("click", () => {
+            screen.textContent = moods.hacker.art;
+            statusMsg.textContent = moods.hacker.message;
+        });
+
+        document.getElementById("mood-sleep").addEventListener("click", () => {
+            screen.textContent = moods.sleep.art;
+            statusMsg.textContent = moods.sleep.message;
+        });
+
+        document.getElementById("mood-wizard").addEventListener("click", () => {
+            screen.textContent = moods.wizard.art;
+            statusMsg.textContent = moods.wizard.message;
+        });
+
+        // Copy Cat function
+        function copyCat(id, btn) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = "Copied! 🐾";
+                btn.style.background = "#10b981";
+                btn.style.borderColor = "#10b981";
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = "";
+                    btn.style.borderColor = "";
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+
+</html>
