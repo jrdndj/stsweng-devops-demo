@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg0-h: #1d2021;
+            --bg: #282828;
+            --bg1: #3c3836;
+            --bg2: #504945;
+            --fg: #ebdbb2;
+            --fg4: #a89984;
+            --red: #fb4934;
+            --green: #b8bb26;
+            --yellow: #fabd2f;
+            --blue: #83a598;
+            --purple: #d3869b;
+            --aqua: #8ec07c;
+            --orange: #fe8019;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 16px;
+            background: var(--bg0-h);
+            background-image: radial-gradient(var(--bg1) 1px, transparent 1px);
+            background-size: 22px 22px;
+            color: var(--fg);
+            font-family: "JetBrains Mono", ui-monospace, monospace;
+        }
+
+        .window {
+            width: 100%;
+            max-width: 520px;
+            background: var(--bg);
+            border: 2px solid var(--bg2);
+            border-radius: 10px;
+            box-shadow: 8px 8px 0 var(--bg1);
+            overflow: hidden;
+        }
+
+        .titlebar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: var(--bg1);
+            border-bottom: 2px solid var(--bg2);
+            font-size: 0.8rem;
+            color: var(--fg4);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot:nth-child(1) { background: var(--red); }
+        .dot:nth-child(2) { background: var(--yellow); }
+        .dot:nth-child(3) { background: var(--green); }
+
+        .titlebar span {
+            margin-left: auto;
+        }
+
+        .content {
+            padding: 28px 24px 32px;
+            font-size: 1.15rem;
+            line-height: 1.7;
+        }
+
+        .prompt {
+            color: var(--green);
+        }
+
+        .name {
+            color: var(--yellow);
+            font-weight: 700;
+        }
+
+        a {
+            color: var(--aqua);
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 2px dashed var(--aqua);
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
+        }
+
+        a:hover,
+        a:focus-visible {
+            color: var(--bg);
+            background: var(--orange);
+            border-color: var(--orange);
+            outline: none;
+        }
+
+        .tee {
+            color: var(--purple);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 0.6ch;
+            height: 1.1em;
+            margin-left: 4px;
+            vertical-align: text-bottom;
+            background: var(--fg);
+            animation: blink 1s steps(1) infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .cursor { animation: none; }
+        }
+    </style>
+</head>
+<body>
+    <main class="window">
+        <div class="titlebar">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <span>~/pring</span>
+        </div>
+        <div class="content">
+            <span class="prompt">$</span>
+            Hello im <span class="name">pring</span>, use
+            <a href="https://nockr.nockr-app.workers.dev/">nockr</a>
+            <span class="tee">teehee</span><span class="cursor"></span>
+        </div>
+    </main>
+</body>
+</html>
